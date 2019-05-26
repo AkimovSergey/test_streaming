@@ -10,8 +10,6 @@ pushd "%WORKSPACE_DIR%" || echo Can not change dir to workspace directory && exi
 
 cmake  ..  || echo Configuration failed && goto :error
 cmake --build . --use-stderr --config RelWithDebInfo || echo Build failed && goto :error
-rd "workspace\\src\\RelWithDebInfo\\test_data" /s/q
-"workspace\\src\\RelWithDebInfo\\VocabularyExpander.exe" test
 
 
 echo EVERYTHING OK

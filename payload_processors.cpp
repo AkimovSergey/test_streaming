@@ -26,7 +26,7 @@ namespace MPEGParser
 		shared_ptr<BaseProcessor> PayloadProcessorsFactory::GetProcessor(PAYLOAD_TYPE type) const 
 		{
 			if (m_registered_processors.end() == m_registered_processors.find(type))
-				throw exception("Requested processor for not registered type");
+				throw exception(("There is no processor for type: " + std::to_string((int)type)).c_str());
 			return m_registered_processors[type]();
 		}
 

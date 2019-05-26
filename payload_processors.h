@@ -16,7 +16,7 @@ namespace MPEGParser
 			template<class T>
 			static shared_ptr<BaseProcessor> Create()
 			{
-				return shared_ptr<T>(new T);
+				return make_shared<T>();
 			}
 		};
 
@@ -27,14 +27,24 @@ namespace MPEGParser
 		{
 		protected:
 			string m_extension;
+			FILE * m_file;
 			virtual string GetExtension() = 0;
+
 			void DumpData(const pair<size_t, const char * > data)
 			{
 				string output = "output" + GetExtension();
-				std::fstream myfile;
-				myfile = std::fstream(output, std::ios::out | std::ios::binary | std::ios_base::app);
-				myfile.write(data.second, data.first);
-				myfile.close();
+				if (!m_file)
+					// TODO need to check if opened 
+					m_file = fopen(output.c_str(), "wb");
+				fwrite(data.second, data.first, 1, m_file);
+			}
+
+		public:
+			DataDumper() :m_file(nullptr) {}
+			~DataDumper()
+			{
+				if (m_file)
+					fclose(m_file);
 			}
 
 		};
@@ -53,7 +63,7 @@ namespace MPEGParser
 		{
 		public:
 			void ProcessData(const pair<size_t, const char*> data) { DumpData(data); };
-			string GetExtension() { return ".avc1"; }
+			string GetExtension() { return ".mp4"; }
 			static bool is_registered;
 		};
 

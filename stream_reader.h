@@ -32,9 +32,9 @@ namespace MPEGParser
 		for (;;)
 		{
 			while (fs.read(&c, 1) && c != SYNCBYTE);
-			if (c != SYNCBYTE)
+			if (c != SYNCBYTE || fs.peek() == EOF)
 			{
-				std::cout << "en of file" << endl;
+				std::cout << "end of file" << endl;
 				return;
 			}
 			fs.putback(c);
@@ -47,7 +47,7 @@ namespace MPEGParser
 			}
 			catch (exception & e)
 			{
-				std::cout << e.what();
+				std::cout << e.what() << endl;
 			}
 
 		}
