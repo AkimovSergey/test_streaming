@@ -22,7 +22,7 @@ namespace MPEGParser
 		return 0;
 	}
 
-	const const pair<size_t, const char*> MPEG_TSPacket::GetPayloadData() const
+	const pair<size_t, const char*> MPEG_TSPacket::GetPayloadData() const
 	{
 		if (!HasPayload())
 			return { 0, nullptr };
@@ -44,7 +44,7 @@ namespace MPEGParser
 	}
 	bool MPEG_TSPacket::PayloadStart() const
 	{
-		return m_data[0] & PAYLOAD_START_MASK;
+		return m_data[1] & PAYLOAD_START_MASK;
 	}
 
 }

@@ -12,7 +12,7 @@ namespace MPEGParser
 	{
 		map<PAYLOAD_TYPE, shared_ptr<BaseProcessor>> m_processors;
 	public:
-		void ProcessPacket(packet & packet);
+		void ProcessPacket(packet & pack);
 	};
 
 	template <typename packet>
@@ -28,7 +28,7 @@ namespace MPEGParser
 		}
 			
 		if (!processor)
-			throw exception("Unknown packet type");
+			throw "Unknown packet type";
 		processor->ProcessData(pack.GetPayloadData());
 	}
 

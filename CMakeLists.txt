@@ -9,7 +9,6 @@ set(SOURCES  mpeg_packet_processor.h
 				payload_processors.cpp
 				payload_processors.h
 				pch.h
-				stream_reader.cpp
 				stream_reader.h
 				test_unified_streaming.cpp)
 				

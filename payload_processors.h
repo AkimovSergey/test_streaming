@@ -77,7 +77,7 @@ namespace MPEGParser
 			PayloadProcessorsFactory() = default;
 		public:
 			/* in c++ 17 we can use optional to return empty value */
-			shared_ptr<BaseProcessor> GetProcessor(PAYLOAD_TYPE type)  const throw(exception);
+			shared_ptr<BaseProcessor> GetProcessor(PAYLOAD_TYPE type)  const;
 			static PayloadProcessorsFactory * GetInstance();
 			static bool Register(PAYLOAD_TYPE type, function<shared_ptr<BaseProcessor>()> func);
 		};

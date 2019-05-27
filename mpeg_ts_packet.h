@@ -34,7 +34,7 @@ namespace MPEGParser
 		*/
 		void Validate();
 		void Read(ifstream & fs);
-		const const pair<size_t, const char*> GetPayloadData() const;
+		const pair<size_t, const char*> GetPayloadData() const;
 		PAYLOAD_TYPE GetPayloadType() const;
 		size_t AdaptationFieldLength() const;
 		bool HasPayload() const;
