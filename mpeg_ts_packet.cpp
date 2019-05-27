@@ -6,29 +6,37 @@ namespace MPEGParser
 
 	void MPEG_TSPacket::Validate()
 	{
-
+        //TODO: add some checking
 	}
 
 	void MPEG_TSPacket::Read(ifstream & fs)
 	{
-		fs.read(m_data, MPEG_PACKAGE_SIZE);
+		fs.read((char*)m_data, MPEG_PACKAGE_SIZE);
 	}
 
 	size_t MPEG_TSPacket::AdaptationFieldLength() const
 	{
 		// check if there is adaptation field
 		if ((m_data[3] & ADAPTATION_FIELD_MASK)  >= 0x20)
-			return m_data[3];
+			return m_data[4] + AF_FIELD_LENGTH;
 		return 0;
 	}
 
-	const pair<size_t, const char*> MPEG_TSPacket::GetPayloadData() const
+    size_t MPEG_TSPacket::PesHeaderLength(size_t pes_offset) const
+    {
+        auto e = m_data[pes_offset + PES_LENGTH_OFFSET];
+        return PES_LENGTH_OFFSET + m_data[pes_offset + PES_LENGTH_OFFSET];
+    }
+
+	const pair<size_t, const uint8_t*> MPEG_TSPacket::GetPayloadData() const
 	{
 		if (!HasPayload())
 			return { 0, nullptr };
-		auto offset = MPEG_HEADER_SIZE +  1 + AdaptationFieldLength();
-		if (PayloadStart())
-			offset += PES_HEADER_SIZE;
+		auto offset = MPEG_HEADER_SIZE + AdaptationFieldLength();
+        if (PayloadStart())
+
+            offset += PesHeaderLength(offset);
+
 		return {MPEG_PACKAGE_SIZE - offset, &m_data[offset]};
 	}
 
@@ -39,7 +47,7 @@ namespace MPEGParser
 
 	bool MPEG_TSPacket::HasPayload() const
 	{
-		// check if bit for payload
+		// check AF bit for payload
 		return ((m_data[3] & ADAPTATION_FIELD_MASK) & 0x10);
 	}
 	bool MPEG_TSPacket::PayloadStart() const

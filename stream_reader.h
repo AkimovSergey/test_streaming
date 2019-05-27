@@ -45,9 +45,9 @@ namespace MPEGParser
 				packet.Validate();
 				proc.ProcessPacket(packet);
 			}
-			catch (string e)
+			catch (exception & e)
 			{
-				std::cout << e << endl;
+				std::cout << e.what() << endl;
 			}
 
 		}

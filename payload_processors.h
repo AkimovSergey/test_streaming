@@ -10,9 +10,12 @@ namespace MPEGParser
 	{
 		class BaseProcessor
 		{
+            // make it noncopyable
+            BaseProcessor(const BaseProcessor&) = delete;
+            BaseProcessor& operator=(const BaseProcessor&) = delete;
 		public:
-			virtual void ProcessData(const pair<size_t, const char*>) = 0;
-		public:
+            BaseProcessor() = default;
+			virtual void ProcessData(const pair<size_t, const uint8_t*>) = 0;
 			template<class T>
 			static shared_ptr<BaseProcessor> Create()
 			{
@@ -30,12 +33,21 @@ namespace MPEGParser
 			FILE * m_file;
 			virtual string GetExtension() = 0;
 
-			void DumpData(const pair<size_t, const char * > data)
+			void DumpData(const pair<size_t, const uint8_t * > data)
 			{
 				string output = "output" + GetExtension();
-				if (!m_file)
-					// TODO need to check if opened 
-					m_file = fopen(output.c_str(), "wb");
+                if (!m_file)
+                {
+                    try
+                    { 
+                        m_file = fopen(output.c_str(), "wb");
+                    }
+                    catch (...)
+                    {
+                        throw runtime_error("Cannot create output file");
+                    }
+                }
+					
 				fwrite(data.second, data.first, 1, m_file);
 			}
 
@@ -46,13 +58,12 @@ namespace MPEGParser
 				if (m_file)
 					fclose(m_file);
 			}
-
 		};
 
 		class AudioProcessor :public DataDumper<AudioProcessor>
 		{
 		public:
-			void ProcessData(const pair<size_t, const char*> data) { DumpData(data); };
+			void ProcessData(const pair<size_t, const uint8_t*> data) { DumpData(data); };
 			string GetExtension() { return ".aac"; }
 			static bool is_registered;
 		};
@@ -62,8 +73,8 @@ namespace MPEGParser
 		class VideoProcessor :public DataDumper<VideoProcessor>
 		{
 		public:
-			void ProcessData(const pair<size_t, const char*> data) { DumpData(data); };
-			string GetExtension() { return ".mp4"; }
+			void ProcessData(const pair<size_t, const uint8_t*> data) { DumpData(data); };
+			string GetExtension() { return ".h264"; }
 			static bool is_registered;
 		};
 

@@ -28,7 +28,7 @@ namespace MPEGParser
 		}
 			
 		if (!processor)
-			throw "Unknown packet type";
+			throw runtime_error("Unknown packet type");
 		processor->ProcessData(pack.GetPayloadData());
 	}
 
