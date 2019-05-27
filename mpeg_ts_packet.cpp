@@ -24,7 +24,9 @@ namespace MPEGParser
 
     size_t MPEG_TSPacket::PesHeaderLength(size_t pes_offset) const
     {
-        auto e = m_data[pes_offset + PES_LENGTH_OFFSET];
+        return PES_OPT_HEADER_LENGTH;
+        /* Should work but doesn't for first audio packet
+        investigation required */
         return PES_LENGTH_OFFSET + m_data[pes_offset + PES_LENGTH_OFFSET];
     }
 

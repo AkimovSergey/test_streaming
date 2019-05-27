@@ -14,6 +14,7 @@ namespace MPEGParser
 	const static int MPEG_HEADER_SIZE =      0x04;
 	const static int PES_LENGTH_OFFSET =     0x08;
     const static int AF_FIELD_LENGTH =       0x01;
+    const static int PES_OPT_HEADER_LENGTH = 0x0e;
 
 	enum class PAYLOAD_TYPE
 	{
