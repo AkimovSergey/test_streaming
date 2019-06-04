@@ -48,7 +48,8 @@ namespace MPEGParser
                         throw std::system_error(EIO, std::iostream_category(), s.c_str());
                     }
                 }
-					
+                if(m_file.bad())
+                    throw std::system_error(EIO, std::iostream_category(), "Something wrong with output file");
                 m_file.write((const char* )data.second, data.first);
 			}
 
