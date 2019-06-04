@@ -10,7 +10,7 @@ namespace MPEGParser
 	template <typename packet>
 	class MPEG_PacketProcessor
 	{
-		map<PAYLOAD_TYPE, shared_ptr<BaseProcessor>> m_processors;
+        std::map<int, std::shared_ptr<BaseProcessor>> m_processors;
 	public:
 		void ProcessPacket(packet & pack);
 	};
@@ -18,7 +18,7 @@ namespace MPEGParser
 	template <typename packet>
 	void MPEG_PacketProcessor<packet>::ProcessPacket(packet & pack)
 	{
-		shared_ptr<BaseProcessor> processor;
+        std::shared_ptr<BaseProcessor> processor;
 		if (m_processors.end() != m_processors.find(pack.GetPayloadType()))
 			processor = m_processors[pack.GetPayloadType()];
 		else
@@ -28,7 +28,7 @@ namespace MPEGParser
 		}
 			
 		if (!processor)
-			throw runtime_error("Unknown packet type");
+            throw std::runtime_error("Unknown packet type");
 		processor->ProcessData(pack.GetPayloadData());
 	}
 

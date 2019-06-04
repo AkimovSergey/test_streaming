@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
  	if (argc < 2)
 	{
 		std::cout << "File path as first argument required";
-		return 0;
+        return 1;
 	}
 	string file_path = argv[1];
 
@@ -22,15 +22,23 @@ int main(int argc, char* argv[])
 	try
 	{
 		fs.open(file_path.c_str(), ifstream::in | ifstream::binary);
+        if(!fs.is_open())
+            throw "Cannot open file" + file_path;
+        TSReader<MPEG_TSPacket, MPEG_PacketProcessor<MPEG_TSPacket>> reader;
+        reader.Process(fs);
 	}
-	catch (...)
+    catch (string & s)
 	{
-		cout << "Cannot open file " << file_path;
-		return 0;
+        cout << s;
+        return 1;
 	}
+    catch (system_error & e)
+    {
+        cout << e.what();
+        return 1;
+    }
 
-	TSReader<MPEG_TSPacket, MPEG_PacketProcessor<MPEG_TSPacket>> reader;
-	reader.Process(std::move(fs));
+
 	return 0;
 }
 

@@ -2,8 +2,6 @@
 #include "pch.h"
 #include "mpeg_ts_packet.h"
 
-using namespace std;
-
 namespace MPEGParser
 {
 	namespace PayloadProcessors
@@ -15,11 +13,11 @@ namespace MPEGParser
             BaseProcessor& operator=(const BaseProcessor&) = delete;
 		public:
             BaseProcessor() = default;
-			virtual void ProcessData(const pair<size_t, const uint8_t*>) = 0;
+            virtual void ProcessData(const std::pair<size_t, const uint8_t*>) = 0;
 			template<class T>
-			static shared_ptr<BaseProcessor> Create()
+            static std::shared_ptr<BaseProcessor> Create()
 			{
-				return make_shared<T>();
+                return std::make_shared<T>();
 			}
 		};
 
@@ -29,26 +27,29 @@ namespace MPEGParser
 		class DataDumper :public BaseProcessor
 		{
 		protected:
-			string m_extension;
-			FILE * m_file;
-			virtual string GetExtension() = 0;
+            std::string    m_extension;
+            std::ofstream  m_file;
+            virtual std::string GetExtension() = 0;
 
-			void DumpData(const pair<size_t, const uint8_t * > data)
+            void DumpData(std::pair<size_t, const uint8_t * > data)
 			{
-				string output = "output" + GetExtension();
+                std::string output = "output" + GetExtension();
                 if (!m_file)
                 {
                     try
                     { 
-                        m_file = fopen(output.c_str(), "wb");
+                        m_file.open(output.c_str(), std::ofstream::out | std::ofstream::binary);
+                        if(!m_file.is_open())
+                            throw "Cannot create output file";
                     }
-                    catch (...)
+                    catch (std::string & s)
                     {
-                        throw runtime_error("Cannot create output file");
+                        std::cout<<s<<std::endl;
+                        throw std::system_error(EIO, std::iostream_category(), s.c_str());
                     }
                 }
 					
-				fwrite(data.second, data.first, 1, m_file);
+                m_file.write((const char* )data.second, data.first);
 			}
 
 		public:
@@ -56,26 +57,28 @@ namespace MPEGParser
 			~DataDumper()
 			{
 				if (m_file)
-					fclose(m_file);
+                    m_file.close();
 			}
 		};
 
-		class AudioProcessor :public DataDumper<AudioProcessor>
+        class AudioProcessor final :public DataDumper<AudioProcessor>
 		{
 		public:
-			void ProcessData(const pair<size_t, const uint8_t*> data) { DumpData(data); };
-			string GetExtension() { return ".aac"; }
+            void ProcessData(const std::pair<size_t, const uint8_t*> data) { DumpData(data); };
+            std::string GetExtension() { return ".aac"; }
 			static bool is_registered;
+            static const int m_type = 33;
 		};
 
 
 
-		class VideoProcessor :public DataDumper<VideoProcessor>
+        class VideoProcessor final :public DataDumper<VideoProcessor>
 		{
 		public:
-			void ProcessData(const pair<size_t, const uint8_t*> data) { DumpData(data); };
-			string GetExtension() { return ".h264"; }
+            void ProcessData(const std::pair<size_t, const uint8_t*> data) { DumpData(data); };
+            std::string GetExtension() { return ".h264"; }
 			static bool is_registered;
+            static const int m_type = 34;
 		};
 
 	
@@ -83,14 +86,14 @@ namespace MPEGParser
 		class PayloadProcessorsFactory 
 		{
 		private:
-			static map<PAYLOAD_TYPE, function<shared_ptr<BaseProcessor>()>>    m_registered_processors;
+            static std::map<int, std::function<std::shared_ptr<BaseProcessor>()>>    m_registered_processors;
 			/* make it private to prohibit external creation */
 			PayloadProcessorsFactory() = default;
 		public:
 			/* in c++ 17 we can use optional to return empty value */
-			shared_ptr<BaseProcessor> GetProcessor(PAYLOAD_TYPE type)  const;
+            std::shared_ptr<BaseProcessor> GetProcessor(int type)  const;
 			static PayloadProcessorsFactory * GetInstance();
-			static bool Register(PAYLOAD_TYPE type, function<shared_ptr<BaseProcessor>()> func);
+            static bool Register(int type, std::function<std::shared_ptr<BaseProcessor>()> func);
 		};
 
 	}
