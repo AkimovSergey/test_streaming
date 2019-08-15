@@ -1,8 +1,8 @@
 <h1> What is it</h1>
 
 This project was done as test task for some company, to demonstrate my programming and designing skills.<br/>
-An application supposed to parse some transport stream file and extract audio and video into separated files.
-Despite the fact that this project was created for demonstration purposes I believe that it has good, flexible and easy to extend architecture and can become better version of fmpeg :)
+An application designed to parse some transport stream file and extract audio and video into separated files.
+Despite the fact that this project was created for demonstration purposes I believe that it has good, flexible and easy to extend architecture and can become better version of fmpeg with classes :)
 
 <h1> How to build</h1>
 
